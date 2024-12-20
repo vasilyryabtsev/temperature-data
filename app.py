@@ -35,6 +35,9 @@ month_to_season = {12: "winter", 1: "winter", 2: "winter",
 
 
 def temperature_plot_1(city, plot_data, data):
+    '''
+    Графики годовых аномалий.
+    '''
     years = pd.unique(plot_data['timestamp'].dt.year)
     
     for year in years:
@@ -55,6 +58,9 @@ def temperature_plot_1(city, plot_data, data):
         st.plotly_chart(fig)
         
 def temperature_plot_2(city, plot_data):
+    '''
+    График динамики изменения температуры из года в год.
+    '''
     city_data = plot_data[plot_data['city'] == city].copy()
     city_data['year'] = city_data['timestamp'].dt.year
     city_data['day_of_year'] = city_data['timestamp'].dt.dayofyear
@@ -148,6 +154,9 @@ def SMA(data, n):
     return data_copy['smoothed_temperature']
 
 def temperature_SMA(data):
+    '''
+    Получение сглаженной температуры для каждого города.
+    '''
     data_copy = data.copy()
     for city in pd.unique(data_copy['city']):
         sorted_data = data_copy[data_copy['city'] == city].sort_values('timestamp')
@@ -160,11 +169,13 @@ def get_results(data, city, key):
     '''
     Рассчет и вывод результатов.
     '''
+    # Подготовка данных
     data['timestamp'] = pd.to_datetime(data['timestamp']).dt.normalize()
     data = temperature_SMA(data)
     data['mean_temperature'] = data.groupby(['city', 'season'])['smoothed_temperature'].transform('mean')
     data['std_temperature'] = data.groupby(['city', 'season'])['smoothed_temperature'].transform('std')
     
+    # Получение и анализ текущей температуры в городе
     cur_temp = get_weather(*cities[city], key)
     anomaly = is_anomaly(city, cur_temp, current_season(), data)
     
@@ -173,10 +184,12 @@ def get_results(data, city, key):
     else:
         st.write(f"Current weather in {city}: {cur_temp} °C")
     
+    # Вывод таблицы с температурными показателями по сезонам
     st.write(pd.pivot_table(data=data[data['city'] == city],
                             values='smoothed_temperature',
                             index='season', aggfunc=['mean', 'std']))
     
+    # Построение графиков
     plot_data = None
 
     for city_ in pd.unique(data['city']):
