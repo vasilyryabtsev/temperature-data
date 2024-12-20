@@ -30,21 +30,6 @@ month_to_season = {12: "winter", 1: "winter", 2: "winter",
                    6: "summer", 7: "summer", 8: "summer",
                    9: "autumn", 10: "autumn", 11: "autumn"}
 
-def temperature_plot_2(city, plot_data):
-    city_data = plot_data[plot_data['city'] == city].copy()
-    city_data['year'] = city_data['timestamp'].dt.year
-    city_data['day_of_year'] = city_data['timestamp'].dt.dayofyear
-
-    fig = px.line(city_data, x='day_of_year', y='smoothed_temperature', color='year', title=f'Temperature dynamics in {city}')
-    
-    fig.update_layout(
-        xaxis_title='Day of Year',
-        yaxis_title='Temperature (°C)',
-        template='plotly_white'
-    )
-    
-    st.plotly_chart(fig)
-
 def temperature_plot_1(city, plot_data, data):
     years = pd.unique(plot_data['timestamp'].dt.year)
     
@@ -64,6 +49,21 @@ def temperature_plot_1(city, plot_data, data):
         
         fig.update_layout(title=f'{city} {year}', xaxis_title='Date', yaxis_title='Temperature (°C)')
         st.plotly_chart(fig)
+        
+def temperature_plot_2(city, plot_data):
+    city_data = plot_data[plot_data['city'] == city].copy()
+    city_data['year'] = city_data['timestamp'].dt.year
+    city_data['day_of_year'] = city_data['timestamp'].dt.dayofyear
+
+    fig = px.line(city_data, x='day_of_year', y='smoothed_temperature', color='year', title=f'Temperature dynamics in {city}')
+    
+    fig.update_layout(
+        xaxis_title='Day of Year',
+        yaxis_title='Temperature (°C)',
+        template='plotly_white'
+    )
+    
+    st.plotly_chart(fig)
 
 def current_season():
     '''
@@ -178,9 +178,9 @@ def get_results(data, city, key):
 
     for city_ in pd.unique(data['city']):
         plot_data = pd.concat([plot_data, data[data['city'] == city_].iloc[29:]])
-
-    temperature_plot_1(city, plot_data, data)
+    
     temperature_plot_2(city, plot_data)
+    temperature_plot_1(city, plot_data, data)
 
 @st.cache_data
 def check_status(key):
