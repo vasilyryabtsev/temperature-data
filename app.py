@@ -171,7 +171,7 @@ def get_results(data, city, key):
     if anomaly:
         st.write(f'Current weather in {city}: {cur_temp} °C, is anomalous for the season')
     else:
-        st.write(f"Current weather in {city}: {cur_temp} °C, isn't anomalous for the season")
+        st.write(f"Current weather in {city}: {cur_temp} °C")
     
     st.write(pd.pivot_table(data=data[data['city'] == city],
                             values='smoothed_temperature',
