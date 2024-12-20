@@ -7,6 +7,8 @@ import time
 import plotly.express as px
 from datetime import datetime
 
+
+
 URL = 'https://api.openweathermap.org/data/2.5/weather'
 
 cities = {'New York': (40.730610, -73.935242),
@@ -29,6 +31,8 @@ month_to_season = {12: "winter", 1: "winter", 2: "winter",
                    3: "spring", 4: "spring", 5: "spring",
                    6: "summer", 7: "summer", 8: "summer",
                    9: "autumn", 10: "autumn", 11: "autumn"}
+
+
 
 def temperature_plot_1(city, plot_data, data):
     years = pd.unique(plot_data['timestamp'].dt.year)
@@ -156,6 +160,7 @@ def get_results(data, city, key):
     '''
     Рассчет и вывод результатов.
     '''
+    data['timestamp'] = pd.to_datetime(data['timestamp']).dt.normalize()
     data = temperature_SMA(data)
     data['mean_temperature'] = data.groupby(['city', 'season'])['smoothed_temperature'].transform('mean')
     data['std_temperature'] = data.groupby(['city', 'season'])['smoothed_temperature'].transform('std')
@@ -231,8 +236,6 @@ def upload_data(checkbox=None):
     else:
         data = load_data('temperature_data.csv')
     
-    data['timestamp'] = pd.to_datetime(data['timestamp']).dt.normalize()
-    
     return data
 
 def main():
@@ -255,5 +258,7 @@ def main():
             if results:
                 with st.spinner("Calculation in progress..."):
                     get_results(data, city, key)
-            
+   
+   
+         
 main()
