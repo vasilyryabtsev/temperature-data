@@ -81,7 +81,6 @@ def is_anomaly(city, temp, season, data):
         return True
     return False 
 
-@st.cache_data
 def get_weather(lat, lon, key):
     """
     Получает текущую температуру в заданных координатах.
@@ -106,7 +105,6 @@ def get_weather(lat, lon, key):
         
         return {}
 
-@st.cache_data
 def SMA(data, n):
     '''
     Вычесляет простое скользящее среднее для температуры из таблицы data c задынным окном n.
@@ -145,7 +143,6 @@ def SMA(data, n):
     
     return data_copy['smoothed_temperature']
 
-@st.cache_data
 def temperature_SMA(data):
     data_copy = data.copy()
     for city in pd.unique(data_copy['city']):
@@ -154,6 +151,7 @@ def temperature_SMA(data):
         data_copy.loc[smoothed_temperature.index, 'smoothed_temperature'] = smoothed_temperature
     return data_copy
 
+@st.cache_data
 def get_results(data, city, key):
     '''
     Рассчет и вывод результатов.
